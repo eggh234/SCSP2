@@ -14,36 +14,44 @@ def main():
 
     if initial_input == "1":
         # Verify that the code is executed by superuser.
-        check_root_privileges()
+        create_user.check_root_privileges()
 
         # Request input: username
-        uname = request_input("Enter Username you want to add", "username")
+        create_user.uname = create_user.request_input(
+            "Enter Username you want to add", "username"
+        )
 
         # Request input: password
-        password = request_input("Enter Password for the user", "password")
-        re_password = request_input("Re-enter Password for the user", "password")
+        create_user.password = create_user.request_input(
+            "Enter Password for the user", "password"
+        )
+        create_user.re_password = create_user.request_input(
+            "Re-enter Password for the user", "password"
+        )
 
         # Verify that the passwords match
-        if password != re_password:
+        if create_user.password != create_user.re_password:
             print("Passwords do not match")
             sys.exit()
 
         # Request input: salt
-        salt = request_valid_salt()
+        create_user.salt = create_user.request_valid_salt()
 
         # Create new user with the provided input
-        user = User(uname, password, salt)
+        create_user.user = create_user.User(
+            create_user.uname, create_user.password, create_user.salt
+        )
 
         # Print all the user info
-        print(user)
+        create_user.print(create_user.user)
 
     elif initial_input == "2":
-        check_root_privileges()
-        uname, password = get_user_credentials()
+        check_login.check_root_privileges()
+        check_login.uname, password = check_login.get_user_credentials()
 
-        user = User(uname, password)
+        check_login.user = check_login.User(check_login.uname, password)
 
-        if user.authenticate():
+        if check_login.user.authenticate():
             print("Login successful.")
         else:
             print("Invalid Password or User does not exist.")
