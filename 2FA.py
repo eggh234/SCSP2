@@ -1,3 +1,4 @@
+import os
 import sys
 import create_user
 import check_login
@@ -83,8 +84,27 @@ def main():
         else:
             print("Invalid Password or User does not exist.")
 
-    # elif initial_input == "4":
-    #     do this
+    elif initial_input == "4":
+        check_login.check_root_privileges()
+        uname, password = check_login.get_user_credentials()
+
+        user = check_login.User(uname, password)
+
+        if user.authenticate():
+            print("Login successful.")
+
+            # giving info on whats going on
+            print(f"Deleting user account for '{uname}'.")
+
+            # use usrdel to delete username given
+            try:
+                command = f"sudo userdel -r {uname}"
+                os.system(command)
+                print(f"User '{uname}' has been successfully deleted.")
+            except Exception as e:
+                print(f"Failed to delete user '{uname}': {e}")
+        else:
+            print("Invalid Password or User does not exist.")
 
     else:
         print("no valid option slected")
