@@ -50,7 +50,7 @@ def main():
         else:
             print("Invalid Password or User does not exist.")
 
-    elif initial_input == 3:
+    elif initial_input == "3":
         check_login.check_root_privileges()
         uname, password = check_login.get_user_credentials()
 
@@ -58,19 +58,14 @@ def main():
 
         if user.authenticate():
             print("Login successful.")
-            check_login.check_root_privileges()
-            uname, password = check_login.get_user_credentials()
 
-            user = check_login.User(uname, password)
-
-            if user.authenticate():
-                # Request input: password
-                password = create_user.request_input(
-                    "Enter New Password for the user", "password"
-                )
-                re_password = create_user.request_input(
-                    "Re-enter New Password for the user", "password"
-                )
+            # Request input: password
+            password = create_user.request_input(
+                "Enter New Password for the user", "password"
+            )
+            re_password = create_user.request_input(
+                "Re-enter New Password for the user", "password"
+            )
 
             # Verify that the passwords match
             if password != re_password:
@@ -88,7 +83,7 @@ def main():
         else:
             print("Invalid Password or User does not exist.")
 
-    # elif initial_input == 4:
+    # elif initial_input == "4":
     #     do this
 
     else:
