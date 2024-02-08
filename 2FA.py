@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import sys
 import create_user
 import check_login
@@ -6,13 +5,14 @@ import check_login
 
 def main():
 
-    initial_input = input("Select an action:")
-    Print("1) Create a user")
-    Print("2) Login")
-    Print("3) Update password")
-    Print("4) Delete user account")
+    print("Select an action:")
+    print("1) Create a user")
+    print("2) Login")
+    print("3) Update password")
+    print("4) Delete user account")
+    initial_input = input()
 
-    if initial_input == 1:
+    if initial_input == "1":
         # Verify that the code is executed by superuser.
         check_root_privileges()
 
@@ -37,7 +37,7 @@ def main():
         # Print all the user info
         print(user)
 
-    elif initial_input == 2:
+    elif initial_input == "2":
         check_root_privileges()
         uname, password = get_user_credentials()
 
@@ -57,5 +57,6 @@ def main():
     else:
         print("no valid option slected")
 
-        if __name__ == "__main__":
-            main()
+
+if __name__ == "__main__":
+    main()
