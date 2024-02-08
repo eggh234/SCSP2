@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+import sys
 import create_user
 import check_login
 
