@@ -106,15 +106,16 @@ def main():
             print("Login successful.")
 
             # giving info on whats going on
-            print(f"Delet user account for '{uname}'.")
+            print(f"Deleting user account for '{uname}'.")
 
             # use usrdel to delete username given
-            try:
-                command = f"sudo userdel -r {uname}"
-                os.system(command)
-                print(f"User '{uname}' has been successfully deleted.")
-            except Exception as e:
-                print(f"Failed to delete user '{uname}': {e}")
+            subprocess.run(
+                ["sudo", "userdel", "-r", uname],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=False,
+            )
+
         else:
             print("Invalid Password or User does not exist.")
 
