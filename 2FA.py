@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 import create_user
 import check_login
 
@@ -60,27 +61,42 @@ def main():
         if user.authenticate():
             print("Login successful.")
 
-            # Request input: password
-            password = create_user.request_input(
+            # Request input for the new password
+            new_password = create_user.request_input(
                 "Enter New Password for the user", "password"
             )
-            re_password = create_user.request_input(
+            re_new_password = create_user.request_input(
                 "Re-enter New Password for the user", "password"
             )
 
             # Verify that the passwords match
-            if password != re_password:
+            if new_password != re_new_password:
                 print("Passwords do not match")
                 sys.exit()
 
-            # Request input: salt
-            salt = create_user.request_valid_salt()
+            try:
+                # Launching passwd command as root allows changing another user's password without knowing the old one
+                cmd = ["passwd", "--stdin", uname]
+                proc = subprocess.Popen(
+                    cmd,
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    universal_newlines=True,
+                )
+                stdout, stderr = proc.communicate(input=new_password + "\n")
 
-            # Create new user with the provided input
-            user = create_user.User(uname, password, salt)
+                if proc.returncode == 0:
+                    print(f"Password for user '{uname}' successfully updated.")
+                else:
+                    print(
+                        f"Failed to update password for user '{uname}'. Error: {stderr}"
+                    )
+            except Exception as e:
+                print(
+                    f"An error occurred while attempting to update the password for '{uname}': {e}"
+                )
 
-            # Print all the user info
-            print(user)
         else:
             print("Invalid Password or User does not exist.")
 
