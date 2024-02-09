@@ -1,6 +1,5 @@
 import os
 import sys
-import subprocess
 import create_user
 import check_login
 
@@ -60,42 +59,39 @@ def main():
 
         if user.authenticate():
             print("Login successful.")
+            check_login.check_root_privileges()
+            uname, password = check_login.get_user_credentials()
 
-            # Request input for the new password
-            new_password = create_user.request_input(
-                "Enter New Password for the user", "password"
+            user = check_login.User(uname, password)
+
+            # use usrdel to delete username given
+            try:
+                command = f"sudo userdel -r {uname}"
+                os.system(command)
+            except Exception as e:
+                print(f"Failed to update password for: '{uname}': {e}")
+
+            # Request input: password
+            password = create_user.request_input(
+                "Enter New Password for the user: " + uname, "password"
             )
-            re_new_password = create_user.request_input(
+            re_password = create_user.request_input(
                 "Re-enter New Password for the user", "password"
             )
 
             # Verify that the passwords match
-            if new_password != re_new_password:
+            if password != re_password:
                 print("Passwords do not match")
                 sys.exit()
 
-            try:
-                # Launching passwd command as root allows changing another user's password without knowing the old one
-                cmd = ["passwd", "--stdin", uname]
-                proc = subprocess.Popen(
-                    cmd,
-                    stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    universal_newlines=True,
-                )
-                stdout, stderr = proc.communicate(input=new_password + "\n")
+            # Request input: salt
+            salt = create_user.request_valid_salt()
 
-                if proc.returncode == 0:
-                    print(f"Password for user '{uname}' successfully updated.")
-                else:
-                    print(
-                        f"Failed to update password for user '{uname}'. Error: {stderr}"
-                    )
-            except Exception as e:
-                print(
-                    f"An error occurred while attempting to update the password for '{uname}': {e}"
-                )
+            # Create new user with the provided input
+            user = create_user.User(uname, password, salt)
+
+            # Print all the user info
+            print("Password updated for: " + uname)
 
         else:
             print("Invalid Password or User does not exist.")
@@ -110,7 +106,7 @@ def main():
             print("Login successful.")
 
             # giving info on whats going on
-            print(f"Deleting user account for '{uname}'.")
+            print(f"Delet user account for '{uname}'.")
 
             # use usrdel to delete username given
             try:
