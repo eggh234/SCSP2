@@ -5,7 +5,7 @@ from passlib.hash import sha512_crypt
 
 
 class User:
-    def __init__(self, username, password, salt, initial_token_value):
+    def __init__(self, username, password, salt, current_token_value):
 
         # Check if the user already exists during object creation
         if self.user_exists(username):
@@ -15,9 +15,9 @@ class User:
         self.username = username
         self.password = password
         self.salt = salt
-        self.initial_token_value = initial_token_value
+        self.current_token_value = current_token_value
         self.hashed_password = sha512_crypt.hash(
-            password + initial_token_value, salt_size=8, salt=salt, rounds=5000
+            password + current_token_value, salt_size=8, salt=salt, rounds=5000
         )
 
         # Add the user to the OS
@@ -155,16 +155,13 @@ def main():
     # Request input: salt
     salt = request_valid_salt()
 
-    initial_token_value = request_input("Enter Current Token: ")
-
-    Next_token_value = request_input("Enter Next Token: ")
+    current_token_value = request_input("Enter Current Token: ")
 
     # Create new user with the provided input
-    user = User(uname, password, salt, initial_token_value)
+    user = User(uname, password, salt, current_token_value)
 
     # Print all the user info
     print(user)
-    print(Next_token_value)
 
 
 if __name__ == "__main__":

@@ -36,10 +36,10 @@ def main():
         salt = create_user.request_valid_salt()
 
         # Add a new input for the Initial Token Value
-        initial_token_value = input("Enter Initial Token Value: ")
+        current_token_value = input("Enter Initial Token Value: ")
 
         # Create new user with the provided input
-        user = create_user.User(uname, password, salt, initial_token_value)
+        user = create_user.User(uname, password, salt, current_token_value)
 
         # Print all the user info
         print(user)
@@ -48,7 +48,7 @@ def main():
         check_login.check_root_privileges()
         uname, password = check_login.get_user_credentials()
 
-        user = check_login.User(uname, password)
+        user = check_login.User(uname, password, current_token_value)
 
         if user.authenticate():
             print("Login successful.")
