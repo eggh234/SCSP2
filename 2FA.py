@@ -115,7 +115,7 @@ def main():
                 stderr=subprocess.DEVNULL,
                 check=False,
             )
-
+            print(f"Deleted user: " + uname)
         else:
             print("Invalid Password or User does not exist.")
 
