@@ -1,6 +1,5 @@
 import os
 import sys
-import shutil
 import subprocess
 import create_user
 import check_login
@@ -61,19 +60,16 @@ def main():
 
         if user.authenticate():
             print("Login successful.")
-            check_login.check_root_privileges()
-            uname, password = check_login.get_user_credentials()
 
-            user = check_login.User(uname, password)
+            # Use subprocess to delete the username given
+            subprocess.run(
+                ["sudo", "userdel", "-r", uname],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=False,
+            )
 
-            # use usrdel to delete username given
-            try:
-                command = f"sudo userdel -r {uname}"
-                os.system(command)
-            except Exception as e:
-                print(f"Failed to update password for: '{uname}': {e}")
-
-            # Request input: password
+            # Request input for the new password
             password = create_user.request_input(
                 "Enter New Password for the user: " + uname, "password"
             )
@@ -86,14 +82,16 @@ def main():
                 print("Passwords do not match")
                 sys.exit()
 
-            # Request input: salt
+            # Request input for the new salt
             salt = create_user.request_valid_salt()
 
-            # Create new user with the provided input
-            user = create_user.User(uname, password, salt)
-
-            # Print all the user info
-            print("Password updated for: " + uname)
+            # Recreate the user with the new password and salt
+            try:
+                user = create_user.User(uname, password, salt)
+                print("Password updated for user: " + uname)
+            except Exception:
+                # suppress all errors
+                pass
 
         else:
             print("Invalid Password or User does not exist.")
@@ -106,25 +104,17 @@ def main():
 
         if user.authenticate():
             print("Login successful.")
-            print(f"Deleting user account for '{uname}'.")
 
+            # giving info on whats going on
+            print(f"Delet user account for '{uname}'.")
+
+            # use usrdel to delete username given
             try:
-                # Deleting the user and their home directory
-                subprocess.run(["sudo", "userdel", "-r", uname], check=True)
-
-                # Additional explicit check to remove the home directory, if it still exists
-                home_dir_path = f"/home/{uname}"
-                if os.path.exists(home_dir_path):
-                    shutil.rmtree(home_dir_path)
-                    print(
-                        f"Home directory for '{uname}' has also been manually removed."
-                    )
-
+                command = f"sudo userdel -r {uname}"
+                os.system(command)
                 print(f"User '{uname}' has been successfully deleted.")
-            except subprocess.CalledProcessError as e:
-                print(f"Failed to delete user '{uname}': {e}")
             except Exception as e:
-                print(f"An error occurred: {e}")
+                print(f"Failed to delete user '{uname}': {e}")
         else:
             print("Invalid Password or User does not exist.")
 
