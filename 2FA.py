@@ -35,11 +35,11 @@ def main():
         # Request input: salt
         salt = create_user.request_valid_salt()
 
-        # Request input: IT Token
-        Initial_Token_IT = create_user.request_input("Input Initial Token: ")
+        # Add a new input for the Initial Token Value
+        initial_token_value = input("Enter Initial Token Value: ")
 
         # Create new user with the provided input
-        user = create_user.User(uname, password, salt, Initial_Token_IT)
+        user = create_user.User(uname, password, salt, initial_token_value)
 
         # Print all the user info
         print(user)
