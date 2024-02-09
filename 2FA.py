@@ -1,5 +1,7 @@
 import os
 import sys
+import shutil
+import subprocess
 import create_user
 import check_login
 
@@ -104,17 +106,25 @@ def main():
 
         if user.authenticate():
             print("Login successful.")
+            print(f"Deleting user account for '{uname}'.")
 
-            # giving info on whats going on
-            print(f"Delet user account for '{uname}'.")
-
-            # use usrdel to delete username given
             try:
-                command = f"sudo userdel -r {uname}"
-                os.system(command)
+                # Deleting the user and their home directory
+                subprocess.run(["sudo", "userdel", "-r", uname], check=True)
+
+                # Additional explicit check to remove the home directory, if it still exists
+                home_dir_path = f"/home/{uname}"
+                if os.path.exists(home_dir_path):
+                    shutil.rmtree(home_dir_path)
+                    print(
+                        f"Home directory for '{uname}' has also been manually removed."
+                    )
+
                 print(f"User '{uname}' has been successfully deleted.")
-            except Exception as e:
+            except subprocess.CalledProcessError as e:
                 print(f"Failed to delete user '{uname}': {e}")
+            except Exception as e:
+                print(f"An error occurred: {e}")
         else:
             print("Invalid Password or User does not exist.")
 
