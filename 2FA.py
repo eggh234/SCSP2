@@ -103,7 +103,7 @@ def main():
         check_login.check_root_privileges()
         uname, password = check_login.get_user_credentials()
 
-        user = check_login.User(uname, password)
+        user = check_login.User(uname, password, current_token_value)
 
         if user.authenticate():
             print("Login successful.")
