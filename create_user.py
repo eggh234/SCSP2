@@ -17,7 +17,7 @@ class User:
         self.salt = salt
         self.initial_token_value = initial_token_value
         self.hashed_password = sha512_crypt.hash(
-            password, salt_size=8, salt=salt + initial_token_value, rounds=5000
+            password + initial_token_value, salt_size=8, salt=salt, rounds=5000
         )
 
         # Add the user to the OS
