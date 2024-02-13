@@ -40,7 +40,7 @@ def get_user_credentials():
     return uname, password
 
 
-def main():
+def main_check_login():
     check_root_privileges()
     uname, password = get_user_credentials()
 
@@ -53,10 +53,6 @@ def main():
 
     else:
         print("Invalid Password or User does not exist.")
-
-
-if __name__ == "__main__":
-    main()
 
 
 class User:
@@ -187,7 +183,7 @@ def request_input(prompt, default=None):
     return response
 
 
-def main():
+def main_create_user():
     # Verify that the code is executed by superuser.
     check_root_privileges()
 
@@ -213,10 +209,6 @@ def main():
 
     # Print all the user info
     print(user)
-
-
-if __name__ == "__main__":
-    main()
 
 
 def main():
@@ -251,7 +243,7 @@ def main():
         current_token_value = input("Enter Initial Token Value: ")
 
         # Create new user with the provided input
-        user = User(uname, password, salt, current_token_value)
+        user = main_create_user(uname, password, salt, current_token_value)
 
         # Print all the user info
         print(user)
@@ -261,7 +253,7 @@ def main():
         uname, password = get_user_credentials()
 
         current_token_value = input("Enter Initial Token Value: ")
-        user = User(uname, password, current_token_value)
+        user = main_check_login(uname, password, current_token_value)
 
         if user.authenticate():
             print("Login successful.")
