@@ -321,7 +321,8 @@ def main():
         check_root_privileges()
         uname, password = get_user_credentials()
 
-        user = User(uname, password, current_token_value)
+        current_token_value = input("Enter Current Token Value: ")
+        user = Login_User(uname, password, current_token_value)
 
         if user.authenticate():
             print("Login successful.")
