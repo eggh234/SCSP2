@@ -118,11 +118,11 @@ class Create_User:
         with open(SHADOW_FILE, "a+") as shadow_file:
             shadow_file.write(shadow_line + "\n")
 
-    # def create_home_directory(self):
-    #     try:
-    #         os.mkdir("/home/" + self.username)
-    #     except FileExistsError:
-    #         print("Directory: /home/" + self.username + " already exists")
+    def create_home_directory(self):
+        try:
+            os.mkdir("/home/" + self.username)
+        except FileExistsError:
+            print
 
     def __str__(self):
         return (
