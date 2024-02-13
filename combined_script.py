@@ -237,7 +237,6 @@ def main():
         user = Login_User(uname, password, current_token_value)
         if user.authenticate():
             print("Login successful.")
-
             # Request input for the new password
             password = request_input(
                 "Enter New Password for the user: " + uname, "password"
@@ -261,7 +260,10 @@ def main():
                 proc.stdin.write(f"{re_password}\n{re_password}\n".encode("utf-8"))
                 proc.communicate()
                 print(f"Password updated for user: {uname}")
-                print("password: " + re_password)
+                print("salt: " + salt)
+                print("pass: " + password)
+                print
+
             except Exception as e:
                 print(f"Failed to update password for user {uname}. Error: {e}")
 
