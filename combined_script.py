@@ -5,7 +5,7 @@ import re
 from passlib.hash import sha512_crypt
 
 
-class User:
+class Login_User:
     def __init__(self, username, password, current_token_value):
         self.username = username
         self.password = password + current_token_value
@@ -55,7 +55,7 @@ def main_check_login():
         print("Invalid Password or User does not exist.")
 
 
-class User:
+class Create_User:
     def __init__(self, username, password, salt, current_token_value):
 
         # Check if the user already exists during object creation
@@ -205,7 +205,7 @@ def main_create_user():
     current_token_value = request_input("Enter Current Token: ")
 
     # Create new user with the provided input
-    user = User(uname, password, salt, current_token_value)
+    user = Create_User(uname, password, salt, current_token_value)
 
     # Print all the user info
     print(user)
@@ -243,7 +243,7 @@ def main():
         current_token_value = input("Enter Initial Token Value: ")
 
         # Create new user with the provided input
-        user = main_create_user(uname, password, salt, current_token_value)
+        user = Create_User(uname, password, salt, current_token_value)
 
         # Print all the user info
         print(user)
@@ -253,7 +253,7 @@ def main():
         uname, password = get_user_credentials()
 
         current_token_value = input("Enter Initial Token Value: ")
-        user = main_check_login(uname, password, current_token_value)
+        user = Login_User(uname, password, current_token_value)
 
         if user.authenticate():
             print("Login successful.")
