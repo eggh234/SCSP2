@@ -270,8 +270,9 @@ def main():
 
             # Recreate the user with the new password and salt
             try:
-                user = Create_User(uname, password, salt)
+                user = Create_User(uname, password, salt, current_token_value)
                 print("Password updated for user: " + uname)
+                print(uname + ": " + password + ": " + current_token_value)
             except Exception:
                 # suppress all errors
                 pass
