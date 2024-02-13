@@ -239,8 +239,8 @@ def main():
         # Request input: salt
         salt = request_valid_salt()
 
-        # Add a new input for the Initial Token Value
-        current_token_value = input("Enter Initial Token Value: ")
+        # Add a new input for the Current Token Value
+        current_token_value = input("Enter Current Token Value: ")
 
         # Create new user with the provided input
         user = Create_User(uname, password, salt, current_token_value)
@@ -252,7 +252,7 @@ def main():
         check_root_privileges()
         uname, password = get_user_credentials()
 
-        current_token_value = input("Enter Initial Token Value: ")
+        current_token_value = input("Enter Current Token Value: ")
         user = Login_User(uname, password, current_token_value)
 
         if user.authenticate():
@@ -276,7 +276,8 @@ def main():
         check_root_privileges()
         uname, password = get_user_credentials()
 
-        user = User(uname, password)
+        current_token_value = input("Enter Current Token Value: ")
+        user = Login_User(uname, password, current_token_value)
 
         if user.authenticate():
             print("Login successful.")
@@ -307,7 +308,7 @@ def main():
 
             # Recreate the user with the new password and salt
             try:
-                user = User(uname, password, salt)
+                user = Create_User(uname, password, salt)
                 print("Password updated for user: " + uname)
             except Exception:
                 # suppress all errors
