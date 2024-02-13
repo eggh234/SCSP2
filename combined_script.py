@@ -239,19 +239,17 @@ def main():
             print("Login successful.")
 
             # Request input for the new password
-            new_password = request_input(
+            password = request_input(
                 "Enter New Password for the user: " + uname, "password"
             )
-            re_new_password = request_input(
+            re_password = request_input(
                 "Re-enter New Password for the user", "password"
             )
 
             # Verify that the passwords match
-            if new_password != re_new_password:
+            if password != re_password:
                 print("Passwords do not match")
                 sys.exit()
-
-            # Update the user's password
             try:
                 # Using subprocess to call the passwd command, inputting the new password
                 proc = subprocess.Popen(
@@ -260,11 +258,13 @@ def main():
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
                 )
-                proc.stdin.write(f"{new_password}\n{new_password}\n".encode("utf-8"))
+                proc.stdin.write(f"{re_password}\n{re_password}\n".encode("utf-8"))
                 proc.communicate()
                 print(f"Password updated for user: {uname}")
+                print("password: " + re_password)
             except Exception as e:
                 print(f"Failed to update password for user {uname}. Error: {e}")
+
         else:
             print("Invalid Password or User does not exist.")
 
