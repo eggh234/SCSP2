@@ -240,7 +240,7 @@ def main():
 
         current_token_value = input("Enter Current Token Value: ")
         user = Login_User(uname, password, current_token_value)
-
+        print(uname + ": " + password + ": " + current_token_value)
         if user.authenticate():
             print("Login successful.")
 
