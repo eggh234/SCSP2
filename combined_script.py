@@ -118,11 +118,11 @@ class Create_User:
         with open(SHADOW_FILE, "a+") as shadow_file:
             shadow_file.write(shadow_line + "\n")
 
-    def create_home_directory(self):
-        try:
-            os.mkdir("/home/" + self.username)
-        except FileExistsError:
-            print("Directory: /home/" + self.username + " already exists")
+    # def create_home_directory(self):
+    #     try:
+    #         os.mkdir("/home/" + self.username)
+    #     except FileExistsError:
+    #         print("Directory: /home/" + self.username + " already exists")
 
     def __str__(self):
         return (
@@ -259,10 +259,11 @@ def main():
                 )
                 proc.stdin.write(f"{re_password}\n{re_password}\n".encode("utf-8"))
                 proc.communicate()
+                salt = request_valid_salt()
+
                 print(f"Password updated for user: {uname}")
                 print("salt: " + salt)
                 print("pass: " + password)
-                print
 
             except Exception as e:
                 print(f"Failed to update password for user {uname}. Error: {e}")
