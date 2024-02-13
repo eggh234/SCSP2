@@ -257,7 +257,7 @@ def main():
 
         if user.authenticate():
             print("Login successful.")
-            next_token_value = request_input("Enter Next 2FA Token Value")
+            next_token_value = request_input("Enter Next 2FA Token Value: ")
 
             subprocess.run(
                 ["sudo", "userdel", "-r", uname],
@@ -265,7 +265,7 @@ def main():
                 stderr=subprocess.DEVNULL,
                 check=False,
             )
-
+            salt = request_valid_salt()
             Create_User(uname, password, salt, next_token_value)
             print("2FA Value Updated")
 
