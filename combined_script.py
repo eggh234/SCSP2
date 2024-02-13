@@ -224,12 +224,6 @@ def main():
             )
             salt = request_valid_salt()
             Create_User(uname, password, salt, next_token_value)
-            print(
-                "2FA Value Updated to: "
-                + next_token_value
-                + "current:"
-                + current_token_value
-            )
 
         else:
             print("Invalid Password or User does not exist.")
@@ -240,7 +234,6 @@ def main():
 
         current_token_value = input("Enter Current Token Value: ")
         user = Login_User(uname, password, current_token_value)
-        print(uname + ": " + password + ": " + current_token_value)
         if user.authenticate():
             print("Login successful.")
 
@@ -272,7 +265,6 @@ def main():
             try:
                 user = Create_User(uname, password, salt, current_token_value)
                 print("Password updated for user: " + uname)
-                print(uname + ": " + password + ": " + current_token_value)
             except Exception:
                 # suppress all errors
                 pass
