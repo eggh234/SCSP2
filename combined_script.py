@@ -224,6 +224,7 @@ def main():
             )
             salt = request_valid_salt()
             Create_User(uname, password, salt, next_token_value)
+            print("2FA Token Value Updated")
 
         else:
             print("Invalid Password or User does not exist.")
@@ -237,38 +238,33 @@ def main():
         if user.authenticate():
             print("Login successful.")
 
-            # Use subprocess to delete the username given
-            subprocess.run(
-                ["sudo", "userdel", "-r", uname],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                check=False,
-            )
-
             # Request input for the new password
-            password = request_input(
+            new_password = request_input(
                 "Enter New Password for the user: " + uname, "password"
             )
-            re_password = request_input(
+            re_new_password = request_input(
                 "Re-enter New Password for the user", "password"
             )
 
             # Verify that the passwords match
-            if password != re_password:
+            if new_password != re_new_password:
                 print("Passwords do not match")
                 sys.exit()
 
-            # Request input for the new salt
-            salt = request_valid_salt()
-
-            # Recreate the user with the new password and salt
+            # Update the user's password
             try:
-                user = Create_User(uname, password, salt, current_token_value)
-                print("Password updated for user: " + uname)
-            except Exception:
-                # suppress all errors
-                pass
-
+                # Using subprocess to call the passwd command, inputting the new password
+                proc = subprocess.Popen(
+                    ["sudo", "passwd", uname],
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                )
+                proc.stdin.write(f"{new_password}\n{new_password}\n".encode("utf-8"))
+                proc.communicate()
+                print(f"Password updated for user: {uname}")
+            except Exception as e:
+                print(f"Failed to update password for user {uname}. Error: {e}")
         else:
             print("Invalid Password or User does not exist.")
 
@@ -283,7 +279,7 @@ def main():
             print("Login successful.")
 
             # giving info on whats going on
-            print(f"Deleting user account for '{uname}'.")
+            print(f"Deleting user account for: " + uname)
 
             # use usrdel to delete username given
             subprocess.run(
