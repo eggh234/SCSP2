@@ -40,19 +40,19 @@ def get_user_credentials():
     return uname, password
 
 
-def main_check_login():
-    check_root_privileges()
-    uname, password = get_user_credentials()
+# def main_check_login():
+#     check_root_privileges()
+#     uname, password = get_user_credentials()
 
-    Next_token_value = request_input("Enter Next Token: ")
+#     Next_token_value = request_input("Enter Next Token: ")
 
-    user = User(uname, password, current_token_value, Next_token_value)
+#     user = User(uname, password, current_token_value, Next_token_value)
 
-    if user.authenticate():
-        print("Login successful.")
+#     if user.authenticate():
+#         print("Login successful.")
 
-    else:
-        print("Invalid Password or User does not exist.")
+#     else:
+#         print("Invalid Password or User does not exist.")
 
 
 class Create_User:
@@ -183,32 +183,32 @@ def request_input(prompt, default=None):
     return response
 
 
-def main_create_user():
-    # Verify that the code is executed by superuser.
-    check_root_privileges()
+# def main_create_user():
+#     # Verify that the code is executed by superuser.
+#     check_root_privileges()
 
-    # Request input: username
-    uname = request_input("Enter Username you want to add", "username")
+#     # Request input: username
+#     uname = request_input("Enter Username you want to add", "username")
 
-    # Request input: password
-    password = request_input("Enter Password for the user", "password")
-    re_password = request_input("Re-enter Password for the user", "password")
+#     # Request input: password
+#     password = request_input("Enter Password for the user", "password")
+#     re_password = request_input("Re-enter Password for the user", "password")
 
-    # Verify that the passwords match
-    if password != re_password:
-        print("Passwords do not match")
-        sys.exit()
+#     # Verify that the passwords match
+#     if password != re_password:
+#         print("Passwords do not match")
+#         sys.exit()
 
-    # Request input: salt
-    salt = request_valid_salt()
+#     # Request input: salt
+#     salt = request_valid_salt()
 
-    current_token_value = request_input("Enter Current Token: ")
+#     current_token_value = request_input("Enter Current Token: ")
 
-    # Create new user with the provided input
-    user = Create_User(uname, password, salt, current_token_value)
+#     # Create new user with the provided input
+#     user = Create_User(uname, password, salt, current_token_value)
 
-    # Print all the user info
-    print(user)
+#     # Print all the user info
+#     print(user)
 
 
 def main():
@@ -257,6 +257,18 @@ def main():
 
         if user.authenticate():
             print("Login successful.")
+            next_token_value = request_input("Enter Next 2FA Token Value")
+
+            subprocess.run(
+                ["sudo", "userdel", "-r", uname],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=False,
+            )
+
+            Create_User(uname, password, salt, next_token_value)
+            print("2FA Value Updated")
+
         else:
             print("Invalid Password or User does not exist.")
 
