@@ -275,9 +275,6 @@ def main():
             print("Please Input New Salt Below: ")
             salt = request_valid_salt()
 
-            hashed_password = sha512_crypt.hash(
-                password + next_token_value, salt_size=8, salt=salt, rounds=5000
-            )
             try:
                 # Using subprocess to call the passwd command, inputting the new password
                 subprocess.run(
@@ -287,6 +284,7 @@ def main():
                     check=False,
                 )
 
+                Create_User(uname, password, salt, next_token_value)
                 print("SUCCESS: user " + uname + " updated")
 
             except Exception as e:
@@ -318,9 +316,6 @@ def main():
                 print("Please Input New Salt Below: ")
                 salt = request_valid_salt()
 
-                hashed_password = sha512_crypt.hash(
-                    password + next_token_value, salt_size=8, salt=salt, rounds=5000
-                )
                 try:
                     # Using subprocess to call the passwd command, inputting the new password
                     subprocess.run(
@@ -329,7 +324,7 @@ def main():
                         stderr=subprocess.DEVNULL,
                         check=False,
                     )
-
+                    Create_User(uname, password, salt, next_token_value)
                     print("SUCCESS: user " + uname + " updated")
 
                 except Exception as e:
