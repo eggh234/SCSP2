@@ -249,24 +249,17 @@ def main():
             if password != re_password:
                 print("Passwords do not match")
                 sys.exit()
-            try:
-                # Using subprocess to call the passwd command, inputting the new password
-                proc = subprocess.Popen(
-                    ["sudo", "passwd", uname],
-                    stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                )
-                proc.stdin.write(f"{re_password}\n{re_password}\n".encode("utf-8"))
-                proc.communicate()
-                salt = request_valid_salt()
 
-                print(f"Password updated for user: {uname}")
-                print("salt: " + salt)
-                print("pass: " + password)
+            subprocess.run(
+                ["sudo", "userdel", "-r", uname],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=False,
+            )
+            salt = request_valid_salt()
+            Create_User(uname, password, salt, current_token_value)
 
-            except Exception as e:
-                print(f"Failed to update password for user {uname}. Error: {e}")
+            print(f"Password updated for user: {uname}")
 
         else:
             print("Invalid Password or User does not exist.")
