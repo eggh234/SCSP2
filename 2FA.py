@@ -122,7 +122,7 @@ class Create_User:
         try:
             os.mkdir("/home/" + self.username)
         except FileExistsError:
-            print("Home Directory Already Exists")
+            print
 
     def __str__(self):
         return (
