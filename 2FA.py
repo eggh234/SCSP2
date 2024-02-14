@@ -227,28 +227,6 @@ def main():
 
         else:
             print("FAILURE: user " + uname + " does not exist")
-            check_root_privileges()
-            uname, password = get_user_credentials()
-
-            current_token_value = input("Enter Current Token Value: ")
-            next_token_value = input("Enter Next Token Value: ")
-            user = Login_User(uname, password, current_token_value)
-
-            if user.authenticate():
-                print("SUCCESS: Login Successful")
-
-                subprocess.run(
-                    ["sudo", "userdel", "-r", uname],
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    check=False,
-                )
-                salt = request_valid_salt()
-                Create_User(uname, password, salt, next_token_value)
-                print("2FA Token Value Updated")
-
-            else:
-                print("FAILURE: either password or token incorrect.")
 
     elif initial_input == "3":
         check_root_privileges()
@@ -292,46 +270,6 @@ def main():
 
         else:
             print("FAILURE: user " + uname + " does not exist")
-            check_root_privileges()
-            uname, password = get_user_credentials()
-
-            current_token_value = input("Enter Current Token Value: ")
-            next_token_value = request_input("Enter Next 2FA Token Value: ")
-            user = Login_User(uname, password, current_token_value)
-            if user.authenticate():
-                print("SUCCESS: Login Successful")
-                # Request input for the new password
-                password = request_input(
-                    "Enter New Password for the user: " + uname, "password"
-                )
-                re_password = request_input(
-                    "Re-enter New Password for the user", "password"
-                )
-
-                # Verify that the passwords match
-                if password != re_password:
-                    print("Passwords do not match")
-                    sys.exit()
-
-                print("Please Input New Salt Below: ")
-                salt = request_valid_salt()
-
-                try:
-                    # Using subprocess to call the passwd command, inputting the new password
-                    subprocess.run(
-                        ["sudo", "userdel", "-r", uname],
-                        stdout=subprocess.DEVNULL,
-                        stderr=subprocess.DEVNULL,
-                        check=False,
-                    )
-                    Create_User(uname, password, salt, next_token_value)
-                    print("SUCCESS: user " + uname + " updated")
-
-                except Exception as e:
-                    print(f"Failed to update password for user {uname}. Error: {e}")
-
-            else:
-                print("FAILURE: either password or token incorrect.")
 
     elif initial_input == "4":
         check_root_privileges()
