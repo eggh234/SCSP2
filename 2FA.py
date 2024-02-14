@@ -45,7 +45,7 @@ class Create_User:
 
         # Check if the user already exists during object creation
         if self.user_exists(username):
-            print("The user already exists. Try deleting it first.")
+            print("FAILURE: user " + username + " already exists")
             sys.exit()
 
         self.username = username
@@ -122,7 +122,7 @@ class Create_User:
         try:
             os.mkdir("/home/" + self.username)
         except FileExistsError:
-            print
+            print("Home Directory Already Exists")
 
     def __str__(self):
         return (
@@ -203,7 +203,7 @@ def main():
         user = Create_User(uname, password, salt, current_token_value)
 
         # Print all the user info
-        print(user)
+        print("SUCCESS: " + uname + " created")
 
     elif initial_input == "2":
         check_root_privileges()
@@ -211,10 +211,9 @@ def main():
 
         current_token_value = input("Enter Current Token Value: ")
         user = Login_User(uname, password, current_token_value)
-
+        next_token_value = request_input("Enter Next 2FA Token Value: ")
         if user.authenticate():
-            print("Login successful.")
-            next_token_value = request_input("Enter Next 2FA Token Value: ")
+            print("SUCCESS: Login Successful")
 
             subprocess.run(
                 ["sudo", "userdel", "-r", uname],
@@ -227,16 +226,39 @@ def main():
             print("2FA Token Value Updated")
 
         else:
-            print("Invalid Password or User does not exist.")
+            print("FAILURE: user " + uname + " does not exist")
+            check_root_privileges()
+            uname, password = get_user_credentials()
+
+            current_token_value = input("Enter Current Token Value: ")
+            next_token_value = input("Enter Next Token Value: ")
+            user = Login_User(uname, password, current_token_value)
+
+            if user.authenticate():
+                print("SUCCESS: Login Successful")
+
+                subprocess.run(
+                    ["sudo", "userdel", "-r", uname],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                    check=False,
+                )
+                salt = request_valid_salt()
+                Create_User(uname, password, salt, next_token_value)
+                print("2FA Token Value Updated")
+
+            else:
+                print("FAILURE: either password or token incorrect.")
 
     elif initial_input == "3":
         check_root_privileges()
         uname, password = get_user_credentials()
 
         current_token_value = input("Enter Current Token Value: ")
+        next_token_value = request_input("Enter Next 2FA Token Value: ")
         user = Login_User(uname, password, current_token_value)
         if user.authenticate():
-            print("Login successful.")
+            print("SUCCESS: Login Successful")
             # Request input for the new password
             password = request_input(
                 "Enter New Password for the user: " + uname, "password"
@@ -254,7 +276,7 @@ def main():
             salt = request_valid_salt()
 
             hashed_password = sha512_crypt.hash(
-                password + current_token_value, salt_size=8, salt=salt, rounds=5000
+                password + next_token_value, salt_size=8, salt=salt, rounds=5000
             )
             try:
                 # Using subprocess to call the passwd command, inputting the new password
@@ -269,14 +291,60 @@ def main():
                 )
                 proc.communicate()
 
-                print(f"Password updated for user: {uname}")
-                print("pass: " + password)
+                print("SUCCESS: user " + uname + " updated")
 
             except Exception as e:
                 print(f"Failed to update password for user {uname}. Error: {e}")
 
         else:
-            print("Invalid Password or User does not exist.")
+            print("FAILURE: user " + uname + " does not exist")
+            check_root_privileges()
+            uname, password = get_user_credentials()
+
+            current_token_value = input("Enter Current Token Value: ")
+            next_token_value = request_input("Enter Next 2FA Token Value: ")
+            user = Login_User(uname, password, current_token_value)
+            if user.authenticate():
+                print("SUCCESS: Login Successful")
+                # Request input for the new password
+                password = request_input(
+                    "Enter New Password for the user: " + uname, "password"
+                )
+                re_password = request_input(
+                    "Re-enter New Password for the user", "password"
+                )
+
+                # Verify that the passwords match
+                if password != re_password:
+                    print("Passwords do not match")
+                    sys.exit()
+
+                print("Please Input New Salt Below: ")
+                salt = request_valid_salt()
+
+                hashed_password = sha512_crypt.hash(
+                    password + next_token_value, salt_size=8, salt=salt, rounds=5000
+                )
+                try:
+                    # Using subprocess to call the passwd command, inputting the new password
+                    proc = subprocess.Popen(
+                        ["sudo", "passwd", uname],
+                        stdin=subprocess.PIPE,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                    )
+                    proc.stdin.write(
+                        f"{hashed_password}\n{hashed_password}\n".encode("utf-8")
+                    )
+                    proc.communicate()
+
+                    print("SUCCESS: user " + uname + " updated")
+
+                except Exception as e:
+                    print(f"Failed to update password for user {uname}. Error: {e}")
+
+            else:
+                print("FAILURE: either password or token incorrect.")
 
     elif initial_input == "4":
         check_root_privileges()
@@ -286,21 +354,25 @@ def main():
         user = Login_User(uname, password, current_token_value)
 
         if user.authenticate():
-            print("Login successful.")
+            print("SUCCESS: Login Successful")
 
             # giving info on whats going on
             print(f"Deleting user account for: " + uname)
 
             # use usrdel to delete username given
-            subprocess.run(
+            result = subprocess.run(
                 ["sudo", "userdel", "-r", uname],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                check=False,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
             )
-            print(f"Deleted user: " + uname)
+            if result.returncode == 0:
+                print("SUCCESS: user " + uname + " Deleted")
+            else:
+                print()
+            print("SUCCESS: user " + uname + " Deleted")
         else:
-            print("Invalid Password or User does not exist.")
+            print("FAILURE: user " + uname + " does not exist")
 
     else:
         print("no valid option slected")
