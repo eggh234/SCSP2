@@ -212,6 +212,7 @@ def main():
         current_token_value = input("Enter Current Token Value: ")
         user = Login_User(uname, password, current_token_value)
         next_token_value = request_input("Enter Next 2FA Token Value: ")
+
         if user.authenticate():
             print("SUCCESS: Login Successful")
 
@@ -226,7 +227,7 @@ def main():
             print("2FA Token Value Updated")
 
         else:
-            print("FAILURE: user " + uname + " does not exist")
+            print("FAILURE: either passwd or token incorrect or user does not exist")
 
     elif initial_input == "3":
         check_root_privileges()
@@ -269,7 +270,7 @@ def main():
                 print(f"Failed to update password for user {uname}. Error: {e}")
 
         else:
-            print("FAILURE: user " + uname + " does not exist")
+            print("FAILURE: either passwd or token incorrect or user does not exist")
 
     elif initial_input == "4":
         check_root_privileges()
@@ -291,9 +292,9 @@ def main():
                 stderr=subprocess.DEVNULL,
                 check=False,
             )
-            print("SUCCESS: user " + uname + " Deleted")
+            print("SUCCESS: User " + uname + " Deleted")
         else:
-            print("FAILURE: user " + uname + " does not exist")
+            print("FAILURE: either passwd or token incorrect or user does not exist")
 
     else:
         print("no valid option slected")
