@@ -280,16 +280,12 @@ def main():
             )
             try:
                 # Using subprocess to call the passwd command, inputting the new password
-                proc = subprocess.Popen(
-                    ["sudo", "passwd", uname],
-                    stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
+                subprocess.run(
+                    ["sudo", "userdel", "-r", uname],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                    check=False,
                 )
-                proc.stdin.write(
-                    f"{hashed_password}\n{hashed_password}\n".encode("utf-8")
-                )
-                proc.communicate()
 
                 print("SUCCESS: user " + uname + " updated")
 
@@ -327,16 +323,12 @@ def main():
                 )
                 try:
                     # Using subprocess to call the passwd command, inputting the new password
-                    proc = subprocess.Popen(
-                        ["sudo", "passwd", uname],
-                        stdin=subprocess.PIPE,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
+                    subprocess.run(
+                        ["sudo", "userdel", "-r", uname],
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                        check=False,
                     )
-                    proc.stdin.write(
-                        f"{hashed_password}\n{hashed_password}\n".encode("utf-8")
-                    )
-                    proc.communicate()
 
                     print("SUCCESS: user " + uname + " updated")
 
@@ -360,16 +352,12 @@ def main():
             print(f"Deleting user account for: " + uname)
 
             # use usrdel to delete username given
-            result = subprocess.run(
+            subprocess.run(
                 ["sudo", "userdel", "-r", uname],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=False,
             )
-            if result.returncode == 0:
-                print("SUCCESS: user " + uname + " Deleted")
-            else:
-                print()
             print("SUCCESS: user " + uname + " Deleted")
         else:
             print("FAILURE: user " + uname + " does not exist")
