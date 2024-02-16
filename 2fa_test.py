@@ -259,9 +259,7 @@ def main():
             )
             new_token = input("Enter New 2FA Token Value: ")
 
-            update_password(
-                uname, password, new_password, current_token_value, new_token
-            )
+            update_password(uname, new_password, new_token)
 
         else:
             print("Invalid Password or User does not exist.")
