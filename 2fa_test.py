@@ -47,7 +47,7 @@ class Create_User:
         self.update_shadow_file()
         self.create_home_directory()
 
-"""     def get_hashed_password(self):
+    def get_hashed_password(self):
         return self.hashed_password
 
     def set_hashed_password(self, password, salt):
@@ -68,7 +68,7 @@ class Create_User:
         return self.salt
 
     def set_salt(self, new_salt):
-        self.salt = new_salt """
+        self.salt = new_salt
 
     @staticmethod
     def user_exists(username):
@@ -160,26 +160,24 @@ def request_input(prompt, default=None):
         return default
     return response
 
-#UPDATED CODE DADDYDANIEL
 
-def update_password(username, old_password, new_password, current_token, new_token):
+def update_password(username, new_password, new_token):
 
     shadow_tempt_file = "/etc/shadow.temp"
-    try: 
-        with open (SHADOW_FILE, "r") as sf, open(shadow_tempt_file, "w") as stf: 
-            for line in sf: 
+    try:
+        with open(SHADOW_FILE, "r") as sf, open(shadow_tempt_file, "w") as stf:
+            for line in sf:
                 user, hash_entry, *rest = line.strip().split(":")
                 if user == username:
-                    #BINGO DANNNNYBOOYYY
                     new_hash = sha512_crypt.hash(new_password + new_token)
-                    stf.write(f"{user}:{new_hash}:{":".join(rest)}\n")
-                else: 
+                    stf.write(f"{user}:{new_hash}:{':'.join(rest)}\n")
+                else:
                     stf.write(line)
-        
+
         os.replace(shadow_tempt_file, SHADOW_FILE)
         print("Successfully updated Password and Salt.")
-    except Exception as e: 
-        print (f"Failed to update password for {username}: {e}")
+    except Exception as e:
+        print(f"Failed to update password for {username}: {e}")
 
         if os.path.exists(shadow_tempt_file):
             os.remove(shadow_tempt_file)
@@ -196,10 +194,9 @@ def main():
     print("4) Delete user account")
     initial_input = input()
 
-
     if initial_input == "1":
         # Verify that the code is executed by superuser.
-        #check_root_privileges()
+        check_root_privileges()
 
         # Request input: username
         uname = request_input("Enter Username you want to add", "username")
@@ -224,9 +221,9 @@ def main():
 
         # Print all the user info
         print(user)
-#Your user authentication logic for 2-4 are very similar. Might be best to restructure into a seperate fuction to avoid redundancy 
+
     elif initial_input == "2":
-        #check_root_privileges()
+        check_root_privileges()
         uname, password = get_user_credentials()
 
         current_token_value = input("Enter Current Token Value: ")
@@ -250,57 +247,27 @@ def main():
             print("Invalid Password or User does not exist.")
 
     elif initial_input == "3":
-        #UPDATED CODE DADDYDANIEL
-        #check_root_privileges()
+        check_root_privileges()
         uname, password = get_user_credentials()
 
         current_token_value = input("Enter Current Token Value: ")
         user = Login_User(uname, password, current_token_value)
         if user.authenticate():
-            print ("Login Successful.")
+            print("Login Successful.")
             new_password = request_input(
                 "Enter New Password for the User: " + uname, "Password"
             )
             new_token = input("Enter New 2FA Token Value: ")
 
-            update_password(uname, password, new_password, current_token_value, new_token)
-
-        else: 
-            print ("Invalid Password or User does not exist.")
-
-"""         current_token_value = input("Enter Current Token Value: ")
-        user = Login_User(uname, password, current_token_value)
-        if user.authenticate():
-            print("Login successful.")
-            # Request input for the new password
-            password = request_input(
-                "Enter New Password for the user: " + uname, "password"
+            update_password(
+                uname, password, new_password, current_token_value, new_token
             )
-            re_password = request_input(
-                "Re-enter New Password for the user", "password"
-            )
-
-            # Verify that the passwords match
-            if password != re_password:
-                print("Passwords do not match")
-                sys.exit()
-
-            subprocess.run(
-                ["sudo", "userdel", "-r", uname],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                check=False,
-            )
-            salt = request_valid_salt()
-            Create_User(uname, password, salt, current_token_value)
-
-            print(f"Password updated for user: {uname}")
 
         else:
-            print("Invalid Password or User does not exist.")"""
+            print("Invalid Password or User does not exist.")
 
     elif initial_input == "4":
-        #check_root_privileges()
+        check_root_privileges()
         uname, password = get_user_credentials()
 
         current_token_value = input("Enter Current Token Value: ")
